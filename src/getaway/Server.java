@@ -159,9 +159,9 @@ public class Server {
 	            case Message.WHOISIN:
 	                writeMsg("List of the users connected at " + dateFormat.format(new Date()) + "\n");
 	                for(int i = 0; i < clientList.size(); ++i) {
-	                    ClientThread ct = clientList.get(i);
-	                    writeMsg((i+1) + ") " + ct.username + " since " + ct.date);
-	                }
+					ClientThread ct = clientList.get(i);
+					writeMsg((i+1) + ") " + ct.username + " since " + ct.date);
+				}
 	                break;
 	            }
 	        }

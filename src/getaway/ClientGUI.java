@@ -177,7 +177,7 @@ public class ClientGUI extends JFrame implements ActionListener {
 	 }
 	 
 	 private void onClickCreateGame() {
-		 
+		 new GameRoom();
 	 }
 	 
 	 private void onClickPrivateChat () {
