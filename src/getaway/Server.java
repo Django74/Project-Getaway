@@ -88,6 +88,17 @@ public class Server {
 	        }
 	    }
 	}
+	private void sendPrivateMessage(String player, String message) {
+		for(int i = 0; i < clientList.size(); i++) {
+			ClientThread ct = clientList.get(i);
+			if (ct.username == player) {
+				if (!ct.sendMessage(new Message(Message.PRIVATE_MESSAGE, message))) {
+					clientList.remove(i);
+					display("Disconnected Client " + ct.username + " removed from list.");
+				}
+			}
+		}
+	}
 	
 	private synchronized void remove(int id) {
 	    for(int i = 0; i < clientList.size(); ++i) {
@@ -168,7 +179,13 @@ public class Server {
 	                }
 					sendMessage(new Message(Message.WHOISIN, names));
 					break;
+				case Message.PRIVATE_MESSAGE:
+					String nameOfPlayer = messageArray[0];
+					String messageToPlayer = messageArray[1];
+					sendPrivateMessage(nameOfPlayer, messageToPlayer);
+					break;
 	            }
+
 	        }
 	        remove(id);
 	        close();

@@ -115,6 +115,9 @@ public class Client {
                         String [] listOnlinePlayers = messageArray;
                         clientGUI.showOnlinePlayers(listOnlinePlayers);
                         break;
+                    case Message.PRIVATE_MESSAGE:
+                        clientGUI.append("Private Message: " + chatMessage);
+                    break;
                 }
             }
         }

@@ -5,7 +5,11 @@ public class Message implements Serializable {
 	
 	protected static final long serialVersionUID = 1112122200L;
 	
-	static final int WHOISIN = 0, CHATMESSAGE = 1, LOGOUT = 2;
+	static final int
+			WHOISIN = 0,
+			CHATMESSAGE = 1,
+			LOGOUT = 2,
+			PRIVATE_MESSAGE = 3;
 	private int type;
 	private String message;
 	private String [] messageArray;

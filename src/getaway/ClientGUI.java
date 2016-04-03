@@ -45,7 +45,7 @@ public class ClientGUI implements ActionListener, ListSelectionListener {
         textArea.setEditable(false);
 
         listOnlinePlayers = new JList(listModel);
-        listOnlinePlayers.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        listOnlinePlayers.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         listOnlinePlayers.setVisibleRowCount(10);
         listOnlinePlayers.addListSelectionListener(this);
         scrollPaneOnlinePlayers.setViewportView(listOnlinePlayers);
@@ -150,6 +150,7 @@ public class ClientGUI implements ActionListener, ListSelectionListener {
         btnWhoIsOnline.setEnabled(true);
         btnJoinGame.setEnabled(true);
         btnCreateGame.setEnabled(true);
+        btnPrivateChat.setEnabled(true);
         tfServer.setEditable(false);
         tfPort.setEditable(false);
         textField.addActionListener(this);
@@ -180,7 +181,11 @@ public class ClientGUI implements ActionListener, ListSelectionListener {
     }
 
     private void onClickPrivateChat () {
-
+        Object obj = listOnlinePlayers.getSelectedValue();
+        String selectedPlayer = obj.toString();
+        String [] messageToPlayer = {selectedPlayer, textField.getText()};
+        client.sendMessage(new Message(Message.PRIVATE_MESSAGE, messageToPlayer));
+        append("Message To " + "*" + selectedPlayer + "*: " + textField.getText());
     }
 
     public void actionPerformed(ActionEvent e) {
