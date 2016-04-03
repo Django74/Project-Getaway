@@ -82,11 +82,22 @@ public class Server {
 	
 	    for(int i = clientList.size(); --i >= 0;) {
 	        ClientThread ct = clientList.get(i);
-	        if(!ct.writeMsg(messageLf)) {
+	        if(!ct.sendMessage(new Message(Message.CHATMESSAGE, messageLf))) {
 	        	clientList.remove(i);
 	            display("Disconnected Client " + ct.username + " removed from list.");
 	        }
 	    }
+	}
+	private void sendPrivateMessage(String player, String message) {
+		for(int i = 0; i < clientList.size(); i++) {
+			ClientThread ct = clientList.get(i);
+			if (ct.username == player) {
+				if (!ct.sendMessage(new Message(Message.PRIVATE_MESSAGE, message))) {
+					clientList.remove(i);
+					display("Disconnected Client " + ct.username + " removed from list.");
+				}
+			}
+		}
 	}
 	
 	private synchronized void remove(int id) {
@@ -98,6 +109,7 @@ public class Server {
 	        }
 	    }
 	}
+
 	 
 	public static void main(String[] args) {
 	    int portNumber = 1500;
@@ -111,7 +123,7 @@ public class Server {
 	    ObjectOutputStream sOutput;
 	    int id;
 	    String username;
-	    Message chatMessage;
+	    Message message;
 	    String date;
 	
 	    ClientThread(Socket socket) {
@@ -137,7 +149,7 @@ public class Server {
 	        boolean keepGoing = true;
 	        while(keepGoing) {
 	            try {
-	                chatMessage = (Message) sInput.readObject();
+	                message = (Message) sInput.readObject();
 	            }
 	            catch (IOException e) {
 	                display(username + " Exception reading Streams: " + e);
@@ -146,24 +158,34 @@ public class Server {
 	            catch(ClassNotFoundException e2) {
 	                break;
 	            }
-	            String message = chatMessage.getMessage();
-	            switch(chatMessage.getType()) {
-	
+	            String chatMessage = message.getMessage();
+				String [] messageArray = message.getMessageArray();
+	            switch(message.getType()) {
 	            case Message.CHATMESSAGE:
-	                broadcast(username + ": " + message);
+	                broadcast(username + ": " + chatMessage);
+					//sendMessage(new Message(Message.CHATMESSAGE, chatMessage));
 	                break;
 	            case Message.LOGOUT:
-	                display(username + " disconnected with a LOGOUT message.");
+	                display(username + " disconnected with a LOGOUT cmessage.");
 	                keepGoing = false;
 	                break;
 	            case Message.WHOISIN:
-	                writeMsg("List of the users connected at " + dateFormat.format(new Date()) + "\n");
-	                for(int i = 0; i < clientList.size(); ++i) {
+	                //writeMsg("List of the users connected at " + dateFormat.format(new Date()) + "\n");
+					String [] names = new String[clientList.size()];
+	                for(int i = 0; i < clientList.size(); i++) {
 	                    ClientThread ct = clientList.get(i);
-	                    writeMsg((i+1) + ") " + ct.username + " since " + ct.date);
+						names[i] = ct.username;
+	                    //writeMsg((i+1) + ") " + ct.username + " since " + ct.date);
 	                }
-	                break;
+					sendMessage(new Message(Message.WHOISIN, names));
+					break;
+				case Message.PRIVATE_MESSAGE:
+					String nameOfPlayer = messageArray[0];
+					String messageToPlayer = messageArray[1];
+					sendPrivateMessage(nameOfPlayer, messageToPlayer);
+					break;
 	            }
+
 	        }
 	        remove(id);
 	        close();
@@ -183,23 +205,19 @@ public class Server {
 	        }
 	        catch (Exception e) {}
 	    }
-	
-	
-	     private boolean writeMsg(String msg) {
-	         if(!socket.isConnected()) {
-	             close();
-	             return false;
-	         }
-	         try {
-	             sOutput.writeObject(msg);
-	         }
-	         catch(IOException e) {
-	
-	             display("Error sending message to " + username);
-	             display(e.toString());
-	         }
-	         return true;
-	     }
+		private boolean sendMessage(Message msg) {
+			if(!socket.isConnected()) {
+				close();
+				return false;
+			}
+			try {
+				sOutput.writeObject(msg);
+			} catch (IOException e) {
+				display("Error sending message to " + username);
+				display(e.toString());
+			}
+			return true;
+		}
 	
 	 }
 }
