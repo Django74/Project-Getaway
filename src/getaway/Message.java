@@ -8,10 +8,16 @@ public class Message implements Serializable {
 	static final int WHOISIN = 0, CHATMESSAGE = 1, LOGOUT = 2;
 	private int type;
 	private String message;
+	private String [] messageArray;
 	
 	Message(int type, String message) {
 		this.type = type;
 		this.message = message;
+	}
+
+	Message (int type, String[] messageArray) {
+		this.type = type;
+		this.messageArray = messageArray;
 	}
 	
 	int getType(){
@@ -21,4 +27,6 @@ public class Message implements Serializable {
 	String getMessage() {
 		return message;
 	}
+	String [] getMessageArray() { return messageArray; }
+
 }

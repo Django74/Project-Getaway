@@ -11,9 +11,6 @@ public class Client {
     private String server, username;
     private int port;
 
-    Client(String server, int port, String username) {
-        this(server, port, username, null);
-    }
     
     Client(String server, int port, String username, ClientGUI clientGUI) {
         this.server = server;
@@ -60,6 +57,10 @@ public class Client {
         clientGUI.append(msg + "\n");  
     }
 
+    private void getOnlineUsers() {
+
+    }
+
     void sendMessage(Message msg) {
         try {
             sOutput.writeObject(msg);
@@ -90,17 +91,11 @@ public class Client {
 
      
     class ListenFromServer extends Thread {
+        Message message;
         public void run() {
             while(true) {
                 try {
-                    String msg = (String) sInput.readObject();
-                    if(clientGUI == null) {
-                        System.out.println(msg);
-                        System.out.print("> ");
-                    }
-                    else {
-                        clientGUI.append(msg);
-                    }
+                    message = (Message) sInput.readObject();
                 }
                 catch(IOException e) {
                     display("Server has close the connection: " + e);
@@ -109,6 +104,17 @@ public class Client {
                     break;
                 }
                 catch(ClassNotFoundException e2) {
+                }
+                String chatMessage = message.getMessage();
+                String [] messageArray = message.getMessageArray();
+                switch(message.getType()) {
+                    case Message.CHATMESSAGE:
+                        clientGUI.append(chatMessage);
+                        break;
+                    case Message.WHOISIN:
+                        String [] listOnlinePlayers = messageArray;
+                        clientGUI.showOnlinePlayers(listOnlinePlayers);
+                        break;
                 }
             }
         }
