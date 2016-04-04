@@ -24,7 +24,7 @@ public class Client {
             socket = new Socket(server, port);
         }
         catch(Exception ec) {
-            display("Error connectiong to server:" + ec);
+            display("Error connecting to server:" + ec);
             return false;
         }
         
